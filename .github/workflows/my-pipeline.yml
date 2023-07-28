@@ -6,69 +6,65 @@
 #
 # Made by Denis Astahov ADV-IT Copyleft (c) 2019
 #---------------------------------------------------------------------
-name: My-GitHubActions-Basics
+name: My-Github-Actions
 env:
-  APPLICATION_NAME    : "MyFlaskAp"
-  DEPLOY_PACKAGE_NAME : "flask-app-ver-${{ github.sha }}"
+  APPLICATION_NAME    : "MyFlask"
+  DEPLOY_PACKAGE_NAME : "flask-deploy-ver-${{ github.sha }}"
 
-on: 
+on:
   push:
-    branches: 
-      - main
-
+    branches:
+      - master
 
 jobs:
   my_testing:
-    runs-on: [ubuntu-latest]
-    
+    runs-on : ubuntu-latest
+
     steps:
-      - name: Print nice message from Testing Job
-        run : echo "Hello World from Test"
+    - name : Print Hello Message in my_testing
+      run  : echo "Hello World from Testing job"
+    
+    - name : Execure Few Commands
+      run  : |
+        echo "Hello Message1"
+        echo "Hello Message2"
+        echo "Application name: ${{ env.APPLICATION_NAME }}"
+    
+    - name : List Current Folder
+      run  : ls -la
 
-      - name: Execute few commands
-        run : |
-          echo "Hello Message1"
-          echo "Hello Message2"
-          echo "Printing Global ENV variable ${{ env.DEPLOY_PACKAGE_NAME }}"
-          
-      - name: List current folder
-        run : ls -la
+    - name : Git clone my REPO
+      uses : actions/checkout@v1
 
-      - name: Git clone my repo
-        uses: actions/checkout@v1
-          
-      - name: List current folder again
-        run : ls -la
+    - name : List Current Folder
+      run  : ls -la
 
   my_deploy:
-    runs-on: [ubuntu-latest]
-    needs: [my_testing]      
+    runs-on : ubuntu-latest
+    needs   : [my_testing]
+
     env:
-      VAR1 : "Job Variable 1"
-      VAR2 : "Job Variable 2"
-    
+      VAR1 : "This is Job Level Variable1"
+      VAR2 : "This is Job Level Variable2"
+
     steps:
-      - name: Print nice message from Deploy Job
-        run : echo "Hello World from Deploy"
-      
-      - name: List current folder
-        run : ls -la
+    - name : Print Hello Message in my_deploy
+      run  : echo "Hello World from Deploy job"
 
-      - name: Printing some info
-        run : echo "App name is ${{ env.APPLICATION_NAME }}"
+    - name : Print env vars
+      run  : |
+        echo "Var1 = ${{ env.VAR1 }}"
+        echo "Var2 = ${{ env.VAR2 }}"
+        echo "Var3 = $LOCAL_VAR"
 
-      - name: Printing some more info
-        run : |
-          echo "Var1 = ${{ env.VAR1 }}"
-          echo "Var2 = ${{ env.VAR2 }}"
-      
-      - name: Print super local env var
-        run : echo "This is local variable $LOCAL_VAR1"
-        env :
-          LOCAL_VAR1 : "Hello Iam local Variable"
+      env:
+        LOCAL_VAR : "This is Local variable"
 
-      - name: Check if command exist
-        run : aws --version
-        
-      - name: Check if ZIP exist
-        run : zip --version
+    - name : Printing Deployment package
+      run  : echo "Deploy package name is ${{ env.DEPLOY_PACKAGE_NAME }}"
+    
+    - name : Let's test some packages if they are here 1
+      run  : aws --version
+
+    - name : Let's test some packages if they are here 2
+      run  : zip --version
